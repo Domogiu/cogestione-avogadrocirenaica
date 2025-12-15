@@ -54,7 +54,11 @@ db.ref().on("value", snap=>{
   corsi = d.corsi || {};
   registrazioni = d.registrazioni || {};
   giornoStudente = d.giornoStudente || "Giorno 1";
-  render();
+
+  // 🔒 BLOCCA RERENDER DURANTE LOGIN / REGISTRAZIONE
+  if (view !== "login") {
+    render();
+  }
 });
 
 /* RENDER PRINCIPALE */

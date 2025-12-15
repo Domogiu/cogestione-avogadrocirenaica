@@ -37,6 +37,29 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
+// 🔐 Funzione hash SHA-256
+async function sha256(text) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(text);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  return Array.from(new Uint8Array(hashBuffer))
+    .map(b => b.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+// 🔎 Controllo password admin
+async function checkAdmin() {
+  const p = prompt("Password admin");
+  const inputHash = await sha256(p);
+
+  if(inputHash === ADMIN_PASSWORD_HASH){
+    adminFrom = utente ? "home" : "login";
+    view = "admin";
+    render();
+  } else {
+    alert("Password errata");
+  }
+}
 // Listener globale per lo stato iscrizioni
 db.ref("iscrizioniBloccate").on("value", snap => {
   iscrizioniBloccate = snap.val() || false; // aggiorna la variabile locale

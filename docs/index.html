@@ -23,7 +23,7 @@ input, select { width:100%; padding:8px; margin:6px 0; }
 <body>
 <h1>Cogestione Studentesca Cirenaica</h1>
 <div id="app"></div>
-<button class="floating-admin" onclick="checkAdmin()">Admin</button>
+<button class="floating-admin" id="adminBtn">Admin</button>
 
 <script>
 /* CONFIG FIREBASE */
@@ -46,13 +46,13 @@ async function sha256(text) {
     .map(b => b.toString(16).padStart(2, "0"))
     .join("");
 }
-
-// 🔎 Controllo password admin
 async function checkAdmin() {
   const p = prompt("Password admin");
+  if (!p) return;
+
   const inputHash = await sha256(p);
 
-  if(inputHash === ADMIN_PASSWORD_HASH){
+  if (inputHash === ADMIN_PASSWORD_HASH) {
     adminFrom = utente ? "home" : "login";
     view = "admin";
     render();
@@ -60,6 +60,9 @@ async function checkAdmin() {
     alert("Password errata");
   }
 }
+
+// ✅ COLLEGA IL BOTTONE
+document.getElementById("adminBtn").addEventListener("click", checkAdmin);
 // Listener globale per lo stato iscrizioni
 db.ref("iscrizioniBloccate").on("value", snap => {
   iscrizioniBloccate = snap.val() || false; // aggiorna la variabile locale
@@ -325,17 +328,6 @@ function annulla(id){
 }
 
 /* ADMIN */
-function checkAdmin(){
-  const p = prompt("Password admin");
-  if(p === ADMIN_PASSWORD){
-    // se utente è loggato => provenienza home, altrimenti login
-    adminFrom = utente ? "home" : "login";
-    view = "admin";
-    render();
-  } else {
-    alert("Password errata");
-  }
-}
 function renderAdmin(){
   let html=`<h2>Area Admin</h2>
   <button style="background:#dc3545;color:white" onclick="toggleIscrizioni()">
